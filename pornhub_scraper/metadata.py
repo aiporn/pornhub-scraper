@@ -36,6 +36,7 @@ def video_metadata(view_url):
 
     Raises:
       ScrapeError: if the page is not structured as expected.
+      request.exceptions.RequestException: if the request fails.
     """
     html = requests.get(view_url).text
     soup = BeautifulSoup(html, 'html.parser')
