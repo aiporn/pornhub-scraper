@@ -1,3 +1,7 @@
 # pornhub-scraper
 
-This will make it easy to scrape thumbnails, "hotspots", and other meta-data from Pornhub videos.
+This is a tool for scraping thumbnails, "hotspots", and other meta-data from Pornhub videos.
+
+# Usage
+
+This requires Python 3.
