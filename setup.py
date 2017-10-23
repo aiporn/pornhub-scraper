@@ -22,5 +22,5 @@ setup(
     ],
     keywords='porn ai scraping html',
     packages=find_packages(),
-    install_requires=['beautifulsoup4'],
+    install_requires=['beautifulsoup4', 'requests', 'pillow'],
 )
