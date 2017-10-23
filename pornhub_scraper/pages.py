@@ -29,9 +29,29 @@ def page_listing(page_url):
     urls = []
     for title in soup.find_all('span', {'class': 'title'}):
         link = title.find('a')
-        if link is not None:
+        if link is not None and 'view_video' in link['href']:
             urls.append(urljoin(page_url, link['href']))
     return urls, _find_next_url(page_url, soup)
+
+def page_iterator(page_url):
+    """
+    List all videos starting at the given page.
+
+    Args:
+      page_url: the page URL to start at.
+        For example: https://www.pornhub.com/video
+
+    Returns:
+      An iterator of video URLs.
+
+    Raises:
+      ScrapeError: if the page is not structured as expected.
+      request.exceptions.RequestException: if the request fails.
+    """
+    while page_url is not None:
+        urls, page_url = page_listing(page_url)
+        for url in urls:
+            yield url
 
 def _find_next_url(base_url, soup):
     """

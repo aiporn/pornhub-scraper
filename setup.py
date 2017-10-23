@@ -2,7 +2,7 @@
 Project meta-data.
 """
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='pornhub-scraper',
@@ -21,6 +21,6 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     keywords='porn ai scraping html',
-    packages=find_packages(),
+    packages=['pornhub_scraper'],
     install_requires=['beautifulsoup4', 'requests', 'pillow'],
 )
