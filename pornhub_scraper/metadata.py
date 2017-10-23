@@ -4,9 +4,9 @@ APIs for video meta-data.
 
 import json
 import re
-import requests
 
 from bs4 import BeautifulSoup
+import requests
 
 class ScrapeError(Exception):
     """
