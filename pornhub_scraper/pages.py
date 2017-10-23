@@ -62,7 +62,6 @@ def _find_next_url(base_url, soup):
     """
     next_button = soup.find('li', {'class': 'page_next'})
     if next_button is None:
-        print('no next button')
         return None
     next_link = next_button.find('a')
     if next_link is not None:
