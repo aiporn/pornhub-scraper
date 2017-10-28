@@ -57,7 +57,7 @@ def page_iterator(page_url):
         for url in urls:
             yield url
 
-def joint_page_iterator(page_urls):
+def joint_page_iterator(page_urls, ignore_errors=False):
     """
     Iterate over listings from multiple starting pages.
 
@@ -78,7 +78,12 @@ def joint_page_iterator(page_urls):
             if listing[1] is None:
                 continue
             elif not listing[0]:
-                listing = page_listing(listing[1])
+                if ignore_errors:
+                    try:
+                        listing = page_listing(listing[1])
+                    except Exception: # pylint: disable=W0703
+                        listing = ([], None)
+                        continue
                 listings[i] = listing
             yield listing[0][0]
             del listing[0][0]

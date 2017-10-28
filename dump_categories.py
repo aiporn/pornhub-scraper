@@ -8,7 +8,7 @@ def dump_categories():
     """
     Print out the video URLs from the given page.
     """
-    for url in joint_page_iterator(category_urls()):
+    for url in joint_page_iterator(category_urls(), ignore_errors=True):
         print(url)
 
 def category_urls():
