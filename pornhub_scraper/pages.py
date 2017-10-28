@@ -82,7 +82,7 @@ def joint_page_iterator(page_urls, ignore_errors=False):
                     try:
                         listing = page_listing(listing[1])
                     except Exception: # pylint: disable=W0703
-                        listing = ([], None)
+                        listings[i] = ([], None)
                         continue
                 listings[i] = listing
             yield listing[0][0]
