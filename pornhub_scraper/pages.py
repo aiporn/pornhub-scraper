@@ -7,6 +7,8 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 import requests
 
+from .metadata import ScrapeError
+
 def page_listing(page_url):
     """
     Get a list of video URLs from a page full of videos.
@@ -27,10 +29,12 @@ def page_listing(page_url):
     html = requests.get(page_url).text
     soup = BeautifulSoup(html, 'html.parser')
     urls = []
-    for title in soup.find_all('span', {'class': 'title'}):
-        link = title.find('a')
-        if link is not None and 'view_video' in link['href']:
-            urls.append(urljoin(page_url, link['href']))
+    container = soup.find('div', {'class': 'nf-videos'})
+    if container is None:
+        raise ScrapeError('could not find videos on page')
+    for link in container.find_all('a'):
+        if link.get('href') and 'view_video' in link.get('href'):
+            urls.append(urljoin(page_url, link.get('href')))
     return urls, _find_next_url(page_url, soup)
 
 def page_iterator(page_url):
