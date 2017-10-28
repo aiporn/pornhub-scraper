@@ -46,12 +46,38 @@ def page_iterator(page_url):
 
     Raises:
       ScrapeError: if the page is not structured as expected.
-      request.exceptions.RequestException: if the request fails.
+      request.exceptions.RequestException: if a request fails.
     """
     while page_url is not None:
         urls, page_url = page_listing(page_url)
         for url in urls:
             yield url
+
+def joint_page_iterator(page_urls):
+    """
+    Iterate over listings from multiple starting pages.
+
+    Produces URLs in a round-robin fashion, with a URL from the first page,
+    then one from the second, etc. Goes through as many pages as possible for
+    each URL.
+
+    Returns:
+      An iterator of video URLs.
+
+    Raises:
+      ScrapeError: if a page is not structured as expected.
+      request.exceptions.RequestException: if a request fails.
+    """
+    listings = [([], u) for u in page_urls]
+    while [l for l in listings if l[0] is not None]:
+        for i, listing in enumerate(listings):
+            if listing[1] is None:
+                continue
+            elif not listing[0]:
+                listing = page_listing(listing[1])
+                listings[i] = listing
+            yield listing[0][0]
+            del listing[0][0]
 
 def _find_next_url(base_url, soup):
     """
