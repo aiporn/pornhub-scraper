@@ -9,7 +9,7 @@ import json
 import os
 import sys
 
-from pornhub_scraper import video_metadata, video_thumbnails
+from pornhub_scraper import main_thumbnail, video_metadata, video_thumbnails
 
 def dump_data(output_dir):
     """
@@ -33,6 +33,7 @@ def dump_data(output_dir):
             os.mkdir(out_path)
             with open(os.path.join(out_path, 'metadata.json'), 'w') as mdfile:
                 json.dump(metadata, mdfile)
+            main_thumbnail(metadata).save(os.path.join(out_path, 'thumbnail.jpg'))
             for timestamp, thumbnail in video_thumbnails(metadata):
                 thumb_name = 'thumbnail_' + str(timestamp) + '.jpg'
                 thumbnail.save(os.path.join(out_path, thumb_name))

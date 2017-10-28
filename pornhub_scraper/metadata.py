@@ -27,12 +27,14 @@ def video_metadata(view_url):
         'title': full video title.
         'duration': duration in seconds.
         'categories': list of category names.
+        'tags': video tags.
         'views': number of views.
         'votes_up': number of upvotes.
         'votes_down': number of downvotes.
         'hotspots': a list of view counts at different parts of the video.
           May be None if the video does not count hotspots.
         'thumbnails': an object specifying how thumbnails are stored.
+        'thumbnail': URL to the main thumbnail image.
 
     Raises:
       ScrapeError: if the page is not structured as expected.
@@ -49,12 +51,14 @@ def video_metadata(view_url):
             'thumbnails': flashvars['thumbs']
         }
         if 'hotspots' in flashvars:
-            metadata['hotspots'] = flashvars['hotspots']
+            metadata['hotspots'] = [int(x) for x in flashvars['hotspots']]
     except (KeyError, ValueError) as exc:
         raise ScrapeError('could not unpack flashvars') from exc
     metadata['categories'] = _find_categories(soup)
+    metadata['tags'] = _find_tags(soup)
     metadata['views'] = _find_views(soup)
     metadata['votes_up'], metadata['votes_down'] = _find_votes(soup)
+    metadata['thumbnail'] = _find_thumbnail(soup)
     return metadata
 
 def _find_flash_vars(soup):
@@ -78,9 +82,23 @@ def _find_categories(soup):
     """
     Find the video categories from a parsed HTML page.
     """
-    element = soup.find('div', {'class': 'categoriesWrapper'})
+    return _wrapper_entries(soup, 'categoriesWrapper')
+
+def _find_tags(soup):
+    """
+    Find the video tags from a parsed HTML page.
+    """
+    return _wrapper_entries(soup, 'tagsWrapper')
+
+def _wrapper_entries(soup, name):
+    """
+    Find all the linked keywords in a wrapper of links.
+
+    Useful for categoriesWrapper and tagsWrapper.
+    """
+    element = soup.find('div', {'class': name})
     if element is None:
-        raise ScrapeError('could not find categories')
+        raise ScrapeError('could not find wrapper entries')
     categories = []
     for link in element.find_all('a'):
         category = link.text.strip()
@@ -116,3 +134,15 @@ def _parse_counter(soup, counter_class):
         return int(element.text.strip().replace(',', ''))
     except ValueError as exc:
         raise ScrapeError('could not parse count') from exc
+
+def _find_thumbnail(soup):
+    """
+    Find the thumbnail URL in a parsed HTML page.
+    """
+    element = soup.find('div', {'class': 'thumbnail'})
+    if element is None:
+        raise ScrapeError('could not find thumbnail container')
+    img = element.find('img')
+    if img is None:
+        raise ScrapeError('could not find thumbnail image')
+    return img['src']

@@ -9,6 +9,19 @@ import requests
 
 from .metadata import ScrapeError
 
+def main_thumbnail(metadata):
+    """
+    Fetch the main thumbnail for the video.
+
+    Returns:
+      A PIL image for the thumbnail.
+
+    Raises:
+      ScrapeError: if thumbnail meta-data is missing or invalid.
+      request.exceptions.RequestException: if a request fails.
+    """
+    return _fetch_image(metadata['thumbnail'])
+
 def video_thumbnails(metadata):
     """
     Fetch the thumbnails for the video.
@@ -50,10 +63,7 @@ def _fetch_thumbnail_grids(url_pattern):
     max_idx = int(idx_field.group(1))
     for idx in range(0, max_idx+1):
         url = url_pattern.replace(idx_field.group(0), str(idx))
-        req = requests.get(url, stream=True)
-        img = Image.open(req.raw)
-        img.load()
-        yield img
+        yield _fetch_image(url)
 
 def _split_thumbnail_grid(image):
     """
@@ -67,3 +77,12 @@ def _split_thumbnail_grid(image):
         for col in range(cols):
             off_x, off_y = width*col, height*row
             yield image.crop((off_x, off_y, off_x+width, off_y+height))
+
+def _fetch_image(url):
+    """
+    Fetch a PIL image.
+    """
+    req = requests.get(url, stream=True)
+    img = Image.open(req.raw)
+    img.load()
+    return img
