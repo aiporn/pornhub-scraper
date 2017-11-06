@@ -32,7 +32,7 @@ def video_metadata(view_url):
         'votes_up': number of upvotes.
         'votes_down': number of downvotes.
         'hotspots': a list of view counts at different parts of the video.
-          May be None if the video does not count hotspots.
+          May not be present if the video does not count hotspots.
         'thumbnails': an object specifying how thumbnails are stored.
         'thumbnail': URL to the main thumbnail image.
 
