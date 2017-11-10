@@ -73,17 +73,19 @@ def joint_page_iterator(page_urls, ignore_errors=False):
       request.exceptions.RequestException: if a request fails.
     """
     listings = [([], u) for u in page_urls]
-    while [l for l in listings if l[0] is not None]:
+    while [l for l in listings if l[0] or l[1]]:
         for i, listing in enumerate(listings):
-            if listing[1] is None:
-                continue
-            elif not listing[0]:
-                if ignore_errors:
+            if not listing[0]:
+                if not listing[1]:
+                    continue
+                elif ignore_errors:
                     try:
                         listing = page_listing(listing[1])
                     except Exception: # pylint: disable=W0703
-                        listings[i] = ([], None)
+                        listings[i] = (None, None)
                         continue
+                else:
+                    listing = page_listing(listing[1])
                 listings[i] = listing
             yield listing[0][0]
             del listing[0][0]
